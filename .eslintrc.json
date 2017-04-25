@@ -1,0 +1,23 @@
+{
+ "root": true,
+ "rules": {
+	"no-tabs": "off",
+	"no-console": "off",
+	"prefer-template": "off",
+	"react/jsx-indent": "off"
+ },
+ "env": {
+	"es6": true,
+	"node": true,
+	"browser": true
+ },
+ "extends": [ "airbnb", "plugin:import/warnings" ],
+ "parserOptions": {
+	"ecmaVersion": 6,
+	"sourceType": "module",
+	"ecmaFeatures": {
+	 "jsx": true,
+	 "experimentalObjectRestSpread": true
+	 }
+ }
+}
