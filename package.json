@@ -3,6 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
+		"concurrently": "^3.4.0",
 		"jquery": "^3.2.1",
 		"papaparse": "^4.2.0",
 		"react": "^15.5.4",
@@ -20,7 +21,9 @@
 		"react-scripts": "0.9.5"
 	},
 	"scripts": {
-		"start": "react-scripts start",
+		"app": "react-scripts start",
+		"apiadapter": "node ./apiAdapter/fminerApi.js",
+		"start": "concurrently -p \"[{name}]\" -n \"APP,APIADAPTER\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run app\" \"npm run apiadapter\"",
 		"build": "react-scripts build",
 		"test": "react-scripts test --env=jsdom",
 		"eject": "react-scripts eject"
