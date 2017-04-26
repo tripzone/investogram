@@ -4,7 +4,10 @@
 	"no-tabs": "off",
 	"no-console": "off",
 	"prefer-template": "off",
-	"react/jsx-indent": "off"
+	"react/jsx-indent": "off",
+	"arrow-body-style": "off",
+	"no-unused-expressions": "off",
+	"indent": ["error","tab", {"SwitchCase": 1}]
  },
  "env": {
 	"es6": true,

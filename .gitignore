@@ -2,6 +2,9 @@
 
 # dependencies
 /node_modules
+/src/private
+/apiAdapter/node_modules
+/apiAdapter/private
 
 # testing
 /coverage
@@ -15,4 +18,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
