@@ -8,7 +8,7 @@ const diff = require('deep-diff').diff;
 const app = express();
 app.use(bodyParser.json());
 
-const portListen = 6000;
+const portListen = 2500;
 app.listen(portListen);
 console.log('Listening on port ' + portListen + '...');
 
@@ -22,8 +22,8 @@ app.get('/:id/keys', getKeys);
 app.get('/:id/test', testId);
 
 app.use((req, res, next) => {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, db, collection, id');
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, collection');
 	next();
 });
 
@@ -50,7 +50,7 @@ function post(req, res) {
 		})
 
 	const firebasePost$ = new Rx.Observable.fromPromise(firebase.patchChild(stock, collect, data))
-		.catch((x) => { throw({error: 'FIREBASE_POST_FAILED', desc: x}) })
+		.catch((x) => {console.log(x); throw({error: 'FIREBASE_POST_FAILED', desc: x}) })
 
 	const post$ = new Rx.Observable.combineLatest(mongoPost$, firebasePost$)
 		.subscribe(

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const collection = 'collection';
 const symbol = '_id'
 const success = { succedss: true }
-mongoose.connect('mongodb://localhost/fminer');
+mongoose.connect('mongodb://localhost/investogram');
 const emptySchema = new mongoose.Schema({_id: String, data: Object}, { strict: false });
 const mongooseModel = collection => mongoose.model(collection, emptySchema, collection);
 
