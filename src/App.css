@@ -35,6 +35,7 @@
 }
 
 .app-stocks-cell-text {
+	cursor: pointer;
 }
 
 .app-stocks-row {
@@ -46,6 +47,11 @@
 
 .app-stocks-title-text {
 	padding-left: 30px;
+	cursor: pointer;
+}
+
+.greenBG {
+	background-color: LightCyan;
 }
 
 @keyframes App-logo-spin {

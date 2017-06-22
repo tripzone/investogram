@@ -2,14 +2,43 @@ import Papa from 'papaparse';
 
 export const yahooDivs = (x) => {
 	const dividends = {};
-	// const response = x.query.results.quote;
-	// response.forEach((item) => {
-	// 	// dividends[item.Date] = parseFloat(item.Dividends);
-	// });
+	const response = x.query.results.quote;
+	response.forEach((item) => {
+		dividends[item.Date] = parseFloat(item.Dividends);
+	});
 	return {};
 };
 
-export const morningStar = (x) => {
+export const edgar = (x, reportType) => {
+	if (x.result) {
+		if(x.result.totalrows > 0) {
+			const parsedResults =  x.result.rows.map((row) => {
+				let rowObject = {}
+				row.values.forEach((value) => {
+					rowObject[value.field]=value.value;
+				});
+				return rowObject;
+			})
+			let periodObject = {}
+			parsedResults.forEach((period) => {
+				const keyValue = reportType === 'ann' ? period.fiscalyear : period.fiscalyear+'q'+period.fiscalquarter;
+				periodObject[keyValue] = period;
+			})
+			return periodObject;
+		}
+		return null;
+	}
+	return null;
+}
+
+export const edgarAnn = (x) => {
+	return edgar(x, 'ann');
+}
+export const edgarQtr = (x) => {
+	return edgar(x, 'qtr');
+}
+
+export const morningstar = (x) => {
 	const skipFields = ['Margins % of Sales', 'Profitability', 'Year over Year', 'Cash Flow Ratios', 'Balance Sheet Items (in %)', 'Liquidity/Financial Health', 'Efficiency', '', '3-Year Average', '5-Year Average', '10-Year Average', 'Revenue', 'Total Assets', 'Gross Margin', 'Operating Margin %', 'Asset Turnover (Average)'];
 	const addToTitle = {
 		'COGS': ' % rev',
