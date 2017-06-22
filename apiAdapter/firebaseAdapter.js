@@ -82,6 +82,14 @@ module.exports = {
 		});
 	},
 
+	getAllKeys: ()=>{
+		return new Promise((resolve, reject) => {
+			urlCatch('', false, true)
+			.then(x =>{
+				resolve(x);
+			}).catch( err => {reject(Object.assign(fail, { error: 'OBJECT_NOT_FOUND' }, {desc: err }))})
+	})},
+
 	getKeys: (home) => {
 		const result = {};
 		return new Promise((resolve, reject) => {
@@ -90,9 +98,9 @@ module.exports = {
 					const subRoots = Object.keys(JSON.parse(x));
 					let currentRoot = ''
 					return Rx.Observable.from(subRoots)
-							.do(x => { currentRoot = x })
-							.mergeMap(x => Rx.Observable.fromPromise(urlCatch(home,x,true)))
-							.do(y => { return result[currentRoot] = Object.keys(JSON.parse(y)) })
+							.mergeMap(x => Rx.Observable.fromPromise(urlCatch(home,x,true))
+								.do(y => { return result[x] = Object.keys(JSON.parse(y)) })
+							)
 						.subscribe(x => { console.log('x', x) },
 							err => reject(err),
 							comp => resolve(result)

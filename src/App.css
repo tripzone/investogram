@@ -1,5 +1,51 @@
 .App {
+}
+
+.app-stocks-cell-box {
+	width: 30px;
+	height: 30px;
+	margin-left: 10px;
+	color:white;
+	/*text-align: center;*/
+	font-size: 0.5em;
+}
+
+.call-status-2 {
+	background-color: red;
+}
+
+.call-status-1 {
+	background-color: green;
+}
+
+.call-status-0 {
+	background-color: grey;
+}
+
+.app-stocks-cell {
+	/*display: inline-flex;*/
+	display: inline-block;
+	/*height: 100%;*/
+	vertical-align: middle;
 	text-align: center;
+}
+
+.app-stock-cell-boxes {
+	display: inline-flex;
+}
+
+.app-stocks-cell-text {
+}
+
+.app-stocks-row {
+	border-bottom-style: dashed;
+	border-width: 1px;
+	padding: 10px;
+	margin-bottom: 0px;
+}
+
+.app-stocks-title-text {
+	padding-left: 30px;
 }
 
 @keyframes App-logo-spin {

@@ -6,6 +6,14 @@ const Rx = require('rxjs/Rx');
 const diff = require('deep-diff').diff;
 
 const app = express();
+
+app.use((req, res, next) => {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, HEAD, OPTIONS, PUT')
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, collection');
+	next();
+});
+
 app.use(bodyParser.json());
 
 const portListen = 2500;
@@ -14,6 +22,7 @@ console.log('Listening on port ' + portListen + '...');
 
 // ENDPOINTS
 app.get('/', getAll);
+app.get('/keys', getRootKeys);
 app.get('/:id', getId);
 app.post('/:id' , post);
 app.patch('/:id', patch);
@@ -21,11 +30,8 @@ app.delete('/:id', deleteId);
 app.get('/:id/keys', getKeys);
 app.get('/:id/test', testId);
 
-app.use((req, res, next) => {
-	res.setHeader('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, collection');
-	next();
-});
+
+
 
 const collection = 'collection';
 const mongoData = 'data';
@@ -112,7 +118,16 @@ function deleteId(req, res) {
 		)
 }
 
+function getRootKeys(req, res) {
+	console.log('getting root keys')
+	firebase.getAllKeys('').then(
+		x=> res.status(200).send(x),
+		err => res.status(500).send(err)
+	)
+}
+
 function getKeys(req, res) {
+	console.log('thees keys work')
 	const stock = req.params.id;
 	firebase.getKeys(stock).then(
 		x => res.status(200).send(x),

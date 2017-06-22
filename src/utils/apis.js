@@ -1,9 +1,10 @@
 import $ from 'jquery';
 import axios from 'axios';
+const baseUrl = 'http://localhost:2500';
 
 const instance = axios.create({
 	baseURL: 'http://localhost:2500',
-	timeout: 1000,
+	timeout: 2000,
 	headers: { 'Content-Type': 'application/json' }
 });
 
@@ -36,15 +37,22 @@ export const apiGet = (url) => {
 // 	});
 // };
 
-export const apiPost = (url, collection, data) => {
+export const dbPost = (url, collection, data) => {
 	return instance.post(
 		'/'+url,
 		JSON.stringify(data),
-		{ headers: { collection } })
-	.then((response) => {
-		console.log(url, ' ', collection, 'successfully recorded ');
-	})
-	.catch((error) => {
-		console.log(url, ' ', collection, 'ERROR ', error);
-	});
+		{ headers: { collection } });
+};
+
+export const dbPatch = (url, collection, data) => {
+	return instance.patch(
+		'/'+url,
+		JSON.stringify(data),
+		{ headers: { collection } });
+};
+
+export const dbGet = (url) => {
+	return instance.get(
+		'/'+url,
+		);
 };
