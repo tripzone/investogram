@@ -31,7 +31,7 @@ export const edgar = (x, reportType) => {
 	return null;
 }
 
-export const edgarAnn = (x) => {
+export const edgarAnnual = (x) => {
 	return edgar(x, 'ann');
 }
 export const edgarQtr = (x) => {

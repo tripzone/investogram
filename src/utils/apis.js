@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import axios from 'axios';
-const baseUrl = 'http://localhost:2500';
 
 const instance = axios.create({
 	baseURL: 'http://localhost:2500',
@@ -20,22 +19,6 @@ export const apiGet = (url) => {
 		complete: () => {},
 	});
 };
-
-// export const apiPost = (url, collection, data) => {
-// 	return $.ajax({
-// 		type: 'POST',
-// 		beforeSend: (request) => {
-// 			request.setRequestHeader('collection', collection);
-// 			request.setRequestHeader('Content-Type', 'application/json');
-// 		},
-// 		url,
-// 		data: JSON.stringify(data),
-// 		processData: false,
-// 		success: (response) => {
-// 			console.log('sucess', response);
-// 		},
-// 	});
-// };
 
 export const dbPost = (url, collection, data) => {
 	return instance.post(

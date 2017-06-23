@@ -60,7 +60,7 @@ function post(req, res) {
 
 	const post$ = new Rx.Observable.combineLatest(mongoPost$, firebasePost$)
 		.subscribe(
-			x => console.log(x),
+			x => {},
 			err => res.status(500).send(err),
 			comp => res.status(200).send(success)
 		)
@@ -95,7 +95,7 @@ function patch(req, res) {
 
 	return Rx.Observable.combineLatest(mongoPatch$, firebasePatch$)
 		.subscribe(
-			x => console.log(x),
+			x => {},
 			err => res.status(500).send(err),
 			comp => res.status(200).send(success)
 		)
@@ -112,14 +112,13 @@ function deleteId(req, res) {
 
 	return Rx.Observable.combineLatest(mongoDelete$, firebaseDelete$)
 		.subscribe(
-			x => console.log(x),
+			x => {},
 			err => res.status(500).send(err),
 			comp => res.status(200).send(success)
 		)
 }
 
 function getRootKeys(req, res) {
-	console.log('getting root keys')
 	firebase.getAllKeys('').then(
 		x=> res.status(200).send(x),
 		err => res.status(500).send(err)
@@ -127,7 +126,6 @@ function getRootKeys(req, res) {
 }
 
 function getKeys(req, res) {
-	console.log('thees keys work')
 	const stock = req.params.id;
 	firebase.getKeys(stock).then(
 		x => res.status(200).send(x),
