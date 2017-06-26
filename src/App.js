@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Rx from 'rxjs/Rx';
 import { observer } from 'mobx-react';
+import classNames from 'classnames'
 
 import './App.css';
 import * as payloaders from './payloaders';
@@ -10,30 +11,6 @@ import {appState, Stock, Stream, Flow} from './state/state'
 
 const stockArray = ['AAPL', 'MSFT', 'SPY', 'IBM'];
 // add new stream to this object, create RX stream, clicked handler
-export const streams = {
-	morningstar: 'Morning Star',
-	edgarAnnual: 'Edgar Annual',
-	edgarQtr: 'Edgar Quarter',
-	edgarTtm: 'Edgar TTM'
-}
-
-// initialize state
-appState.loadStocks = function() {
-	stockArray.forEach(x => {
-		this.stocks[x]= (new Stock(x))
-		Object.keys(streams).forEach(y => {
-			this.stocks[x].flows[y] = new Flow()
-		})
-	})
-}
-appState.loadDBKeys = function() {
-	dbGet('keys').then(x=> {this.db = x.data})
-}
-appState.loadStreams = function() {
-	Object.keys(streams).forEach(x =>{
-		this.stream[x] = new Stream();
-	})
-}
 
 const saveToDatabase = (stock, collection, data) =>{
 	return new Promise((resolve, reject)=> {
@@ -41,12 +18,15 @@ const saveToDatabase = (stock, collection, data) =>{
 	});
 }
 
+
+
 const newStream = (interval, apiUrl, flow, payloader) => {
 	return Rx.Observable
 		.interval(interval)
+		.takeWhile(function (x) { return !appState.cancel; })
 		.take(stockArray.length)
 		.map(x => stockArray[x])
-		.mergeMap(x => !appState.stocks[x].run ? Rx.Observable.empty() : Rx.Observable.fromPromise(apiGet(apiUrl(x)))
+		.mergeMap(x => !appState.stocks[x].active ? Rx.Observable.empty() : Rx.Observable.fromPromise(apiGet(apiUrl(x)))
 			.catch((err)=>{
 					console.log( x, "Error in getting", flow)
 					appState.stocks[x].flows[flow].callFailed();
@@ -71,16 +51,68 @@ const edgarQtrStream$ = newStream(2000, edgarQtrUrl, 'edgarQtr' , payloaders.edg
 const edgarTtmStream$ = newStream(2000, edgarTtmUrl, 'edgarTtm' , payloaders.edgarQtr);
 // const allStreams$ = Rx.Observable.merge(msStream$, edgarAnnStream$, edgarQtrStream$, edgarTtmStream$ );
 
-const clicked = (streams) => {
-	if (streams.morningstar.run) { msStream$.subscribe()};
-	if (streams.edgarAnnual.run) {edgarAnnStream$.subscribe()};
-	if (streams.edgarQtr.run) {edgarQtrStream$.subscribe()};
-	if (streams.edgarTtm.run) {edgarTtmStream$.subscribe()};
+export const streams = {
+	morningstar: {text: 'Morning Star', stream: msStream$},
+	edgarAnnual: {text: 'Edgar Annual', stream: edgarAnnStream$},
+	edgarQtr: {text: 'Edgar Quarter', stream: edgarQtrStream$},
+	edgarTtm: {text: 'Edgar TTM', stream: edgarTtmStream$}
+}
+
+const runClicked = (streamState) => {
+	appState.removeCancel();
+	Object.keys(streams).forEach((x)=>{
+		if (streamState[x].active) {
+			streamState[x].running = true;
+			streams[x].stream.subscribe(x=>{}, err=>{}, comp=>{streamState[x].running = false;});
+		}
+	})
 };
 
-const canceled = () => {
-	console.log('holla cancel');
+const cancelClicked = () => {
+	appState.cancelIt();
 };
+
+// initialize state
+appState.loadStocks = function() {
+	stockArray.forEach(x => {
+		this.stocks[x]= (new Stock(x))
+		Object.keys(streams).forEach(y => {
+			this.stocks[x].flows[y] = new Flow()
+		})
+	})
+}
+appState.loadDBKeys = function() {
+	dbGet('keys').then(x=> {this.db = x.data});
+	console.log('DB loaded')
+}
+appState.loadStreams = function() {
+	Object.keys(streams).forEach(x =>{
+		this.stream[x] = new Stream();
+	})
+	console.log('streams loaded')
+}
+appState.activateAll = function() {
+	Object.keys(this.stocks).forEach((x)=>{this.stocks[x].active=true});
+}
+appState.deActivateAll = function() {
+	Object.keys(this.stocks).forEach((x)=>{this.stocks[x].active=false});
+}
+appState.selectFailed = function() {
+	Object.keys(this.stocks).forEach((x)=>{
+		this.stocks[x].active = false;
+		Object.keys(this.stocks[x].flows).forEach((y)=> {
+			if (this.stocks[x].flows[y].apiCall === 2 || this.stocks[x].flows[y].saveCall === 2) {
+				this.stocks[x].active = true;
+			}
+		})
+	})
+}
+appState.cancelIt = function() {
+	this.cancel = true;
+}
+appState.removeCancel = function() {
+	this.cancel = false;
+}
 
 @observer class FlowBox extends Component {
 	render() {
@@ -98,7 +130,7 @@ const canceled = () => {
 		return (
 			<div
 				onClick={()=> this.props.stream.toggleActive()}
-				className={`app-stocks-title-text flow-text col s2 ${this.props.stream.run ? 'greenBG' : null}`}
+				className={`app-stocks-title-text flow-text col s2 ${this.props.stream.active ? 'greenTopBorder' : null}`}
 			>
 				{this.props.text}
 			</div>
@@ -113,25 +145,42 @@ const canceled = () => {
 		appState.loadStreams();
 	}
 	render() {
+
+		let appRunning = false;
+		Object.keys(appState.stream).forEach((x)=>{
+			return appState.stream[x].running === true ? appRunning = true : null;
+		})
+
+		const cancelButtonStyle = classNames({
+			"app-buttons-button waves-effect waves-light btn red ": true,
+			"disabled": !appRunning,
+		})
+
 		return (
 			<div className="app row">
-				<a className="waves-effect waves-light btn" onClick={() => clicked(appState.stream)}>Get All</a>
-				{Object.keys(appState.db).map((x)=>{return x})}
-				<button id="cancelBtn" onClick={() => canceled()}>Cancel</button>
+				<div className="center app-buttons">
+					<a className="app-buttons-button waves-effect waves-light btn-large" onClick={() => runClicked(appState.stream)}>Get All</a>
+						<button className={cancelButtonStyle} id="cancelBtn" onClick={() => cancelClicked()}>Cancel</button>
+				</div>
+				<div className="center app-links">
+					<a className="app-links-link" onClick={() => appState.activateAll()}>Select All</a>
+					<a className="app-links-link" onClick={() => appState.deActivateAll()}>Select None</a>
+					<a className="app-links-link" onClick={() => appState.selectFailed()}>Select Failed</a>
+				</div>
 				<div className="app-stocks-row row">
 					<div className="app-stocks-title pp-stocks-cell col s12">
 						<div className="app-stocks-title-text flow-text col s2 ">
 							Stock
 						</div>
 						{Object.keys(streams).map((x) => {
-							return <TitleBox stream={appState.stream[x]} text={streams[x]}/>
+							return <TitleBox stream={appState.stream[x]} text={streams[x].text}/>
 						})}
 					</div>
 				</div>
 				<div className="app-stocks ">
 				{Object.keys(appState.stocks).map((x)=>{
 				return (
-					<div className={`app-stocks-row row ${appState.stocks[x].run ? 'greenBG' : null}`}>
+					<div className={`app-stocks-row row ${appState.stocks[x].active ? 'greenBG' : null}`}>
 						<div className="app-stocks-cell col s12">
 							<div className="app-stocks-cell-text col s2" onClick={() => appState.stocks[x].toggleActive()}>{appState.stocks[x].ticker}</div>
 							{Object.keys(streams).map((y) => {

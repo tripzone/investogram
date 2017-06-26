@@ -18,20 +18,21 @@ export class Flow {
 }
 
 export class Stream {
-	@observable run = true;
+	@observable active = true;
+	@observable running = false;
 	toggleActive = function () {
-		this.run = !this.run;
+		this.active = !this.active;
 	}
 }
 
 export class Stock {
 	@observable flows = {}
-	@observable run = true;
+	@observable active = true;
 	constructor(ticker) {
 		this.ticker= ticker;
 	}
 	toggleActive = function() {
-		this.run ? this.run = false : this.run = true;
+		this.active ? this.active = false : this.active = true;
 	}
 }
 
@@ -39,4 +40,5 @@ export const appState = observable({
 	stocks: {},
 	db: {},
 	stream: {},
+	cancel: false,
 })
