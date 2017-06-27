@@ -82,7 +82,11 @@ appState.loadStocks = function() {
 	})
 }
 appState.loadDBKeys = function() {
-	dbGet('keys').then(x=> {this.db = x.data});
+	dbGet('keys').then(
+		x=> {this.db = x.data;
+		console.log(x.data)
+		}
+	);
 	console.log('DB loaded')
 }
 appState.loadStreams = function() {
@@ -173,18 +177,18 @@ appState.removeCancel = function() {
 							Stock
 						</div>
 						{Object.keys(streams).map((x) => {
-							return <TitleBox stream={appState.stream[x]} text={streams[x].text}/>
+							return <TitleBox key={x} stream={appState.stream[x]} text={streams[x].text}/>
 						})}
 					</div>
 				</div>
 				<div className="app-stocks ">
 				{Object.keys(appState.stocks).map((x)=>{
 				return (
-					<div className={`app-stocks-row row ${appState.stocks[x].active ? 'greenBG' : null}`}>
+					<div key={x} className={`app-stocks-row row ${appState.stocks[x].active ? 'greenBG' : null}`}>
 						<div className="app-stocks-cell col s12">
 							<div className="app-stocks-cell-text col s2" onClick={() => appState.stocks[x].toggleActive()}>{appState.stocks[x].ticker}</div>
 							{Object.keys(streams).map((y) => {
-								return <FlowBox flow={appState.stocks[x].flows[y]} />
+								return <FlowBox key={x+y} flow={appState.stocks[x].flows[y]} />
 							})}
 						</div>
 					</div>

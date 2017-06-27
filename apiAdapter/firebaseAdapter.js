@@ -2,14 +2,20 @@
 const admin = require('firebase-admin');
 const request = require('request');
 const Rx = require('rxjs/Rx');
-const serviceAccount = require('./private/secret.json');
-const keys = require('./private/keys.js');
 
-const fbUrl = keys.firebaseUrl;
-const fbAuthId = keys.firebaseAuthId;
+const keys = require('./private/keys.js');
+const secret = require('./private/secret.json');
+const devkeys = require('./private/devkeys.js');
+const devsecret = require('./private/devsecret.json');
+
+const envUse = 'prod';
+
+const secretUse = envUse === 'prod' ? secret : devsecret;
+const fbUrl = envUse === 'prod' ? keys.firebaseUrl : devkeys.firebaseUrl;
+const fbAuthId = envUse === 'prod' ? keys.firebaseAuthId : devkeys.firebaseAuthId;
 
 admin.initializeApp({
-	credential: admin.credential.cert(serviceAccount),
+	credential: admin.credential.cert(secretUse),
 	databaseURL: fbUrl,
 });
 const db = admin.database();
