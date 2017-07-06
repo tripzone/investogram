@@ -5,7 +5,7 @@
   "dependencies": {
     "axios": "^0.16.2",
     "classnames": "^2.2.5",
-    "concurrently": "^3.4.0",
+    "concurrently": "^3.5.0",
     "jquery": "^3.2.1",
     "mobx": "^3.1.16",
     "mobx-react": "^4.2.1",

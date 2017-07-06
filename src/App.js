@@ -5,27 +5,27 @@ import classNames from 'classnames'
 
 import './App.css';
 import * as payloaders from './payloaders';
-import { apiGet, dbPost, dbPatch, dbGet } from './utils/apis';
+import { apiGet, dbPost, dbPatch, dbGet, stocksGet } from './utils/apis';
 import {morningStarUrl, edgarAnnUrl, edgarQtrUrl, edgarTtmUrl} from './utils/urls';
 import {appState, Stock, Stream, Flow} from './state/state'
 
-const stockArray = ['AAPL', 'MSFT', 'SPY', 'IBM'];
+
+// const stockArray = ['AAPL', 'MSFT', 'SPY', 'IBM'];
 // add new stream to this object, create RX stream, clicked handler
 
-const saveToDatabase = (stock, collection, data) =>{
+const saveToDatabase = (stock, collection, data) => {
 	return new Promise((resolve, reject)=> {
 		appState.db && !!appState.db[stock] ? resolve(dbPatch(stock, collection, data)) : resolve(dbPost(stock, collection, data));
 	});
 }
 
-
-
 const newStream = (interval, apiUrl, flow, payloader) => {
+	const activeStocks = Object.keys(appState.stocks).filter((x)=>{return appState.stocks[x].active})
 	return Rx.Observable
 		.interval(interval)
 		.takeWhile(function (x) { return !appState.cancel; })
-		.take(stockArray.length)
-		.map(x => stockArray[x])
+		.take(activeStocks.length)
+		.map(x => {return activeStocks[x]})
 		.mergeMap(x => !appState.stocks[x].active ? Rx.Observable.empty() : Rx.Observable.fromPromise(apiGet(apiUrl(x)))
 			.catch((err)=>{
 					console.log( x, "Error in getting", flow)
@@ -45,25 +45,33 @@ const newStream = (interval, apiUrl, flow, payloader) => {
 		)
 }
 
-const msStream$ = newStream(1000, morningStarUrl, 'morningstar', payloaders.morningstar);
-const edgarAnnStream$ = newStream(1000, edgarAnnUrl, 'edgarAnnual' , payloaders.edgarAnnual);
-const edgarQtrStream$ = newStream(2000, edgarQtrUrl, 'edgarQtr' , payloaders.edgarQtr);
-const edgarTtmStream$ = newStream(2000, edgarTtmUrl, 'edgarTtm' , payloaders.edgarQtr);
 // const allStreams$ = Rx.Observable.merge(msStream$, edgarAnnStream$, edgarQtrStream$, edgarTtmStream$ );
 
-export const streams = {
-	morningstar: {text: 'Morning Star', stream: msStream$},
-	edgarAnnual: {text: 'Edgar Annual', stream: edgarAnnStream$},
-	edgarQtr: {text: 'Edgar Quarter', stream: edgarQtrStream$},
-	edgarTtm: {text: 'Edgar TTM', stream: edgarTtmStream$}
+const streams = {
+	morningstar: {text: 'Morning Star'},
+	edgarAnnual: {text: 'Edgar Annual'},
+	edgarQtr: {text: 'Edgar Quarter'},
+	edgarTtm: {text: 'Edgar TTM'}
 }
 
 const runClicked = (streamState) => {
+	const msStream$ = newStream(1000, morningStarUrl, 'morningstar', payloaders.morningstar);
+	const edgarAnnStream$ = newStream(1000, edgarAnnUrl, 'edgarAnnual' , payloaders.edgarAnnual);
+	const edgarQtrStream$ = newStream(2000, edgarQtrUrl, 'edgarQtr' , payloaders.edgarQtr);
+	const edgarTtmStream$ = newStream(2000, edgarTtmUrl, 'edgarTtm' , payloaders.edgarQtr);
+
+	const streamFlows = {
+		morningstar: msStream$,
+		edgarAnnual: edgarAnnStream$,
+		edgarQtr: edgarQtrStream$ ,
+		edgarTtm: edgarTtmStream$
+	}
+
 	appState.removeCancel();
-	Object.keys(streams).forEach((x)=>{
+	Object.keys(streamFlows).forEach((x)=>{
 		if (streamState[x].active) {
 			streamState[x].running = true;
-			streams[x].stream.subscribe(x=>{}, err=>{}, comp=>{streamState[x].running = false;});
+			streamFlows[x].subscribe(x=>{}, err=>{}, comp=>{streamState[x].running = false;});
 		}
 	})
 };
@@ -74,20 +82,22 @@ const cancelClicked = () => {
 
 // initialize state
 appState.loadStocks = function() {
-	stockArray.forEach(x => {
-		this.stocks[x]= (new Stock(x))
-		Object.keys(streams).forEach(y => {
-			this.stocks[x].flows[y] = new Flow()
+	dbGet('getStocks').then(stocksList => {
+		stocksList.data.forEach(x => {
+			this.stocks[x.ticker]= (new Stock(x.ticker))
+			Object.keys(streams).forEach(y => {
+				this.stocks[x.ticker].flows[y] = new Flow()
+			})
 		})
+		this.loaded = true;
 	})
 }
 appState.loadDBKeys = function() {
 	dbGet('keys').then(
 		x=> {this.db = x.data;
-		console.log(x.data)
+		console.log('DB loaded', x.data)
 		}
-	);
-	console.log('DB loaded')
+	)
 }
 appState.loadStreams = function() {
 	Object.keys(streams).forEach(x =>{
@@ -182,7 +192,7 @@ appState.removeCancel = function() {
 					</div>
 				</div>
 				<div className="app-stocks ">
-				{Object.keys(appState.stocks).map((x)=>{
+				{appState.loaded ? Object.keys(appState.stocks).map((x)=>{
 				return (
 					<div key={x} className={`app-stocks-row row ${appState.stocks[x].active ? 'greenBG' : null}`}>
 						<div className="app-stocks-cell col s12">
@@ -193,7 +203,7 @@ appState.removeCancel = function() {
 						</div>
 					</div>
 				)
-				})}
+				}) : null}
 				</div>
 			</div>
 		);

@@ -41,4 +41,5 @@ export const appState = observable({
 	db: {},
 	stream: {},
 	cancel: false,
+	loaded: false,
 })

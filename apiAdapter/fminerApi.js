@@ -4,6 +4,9 @@ const mongo = require('./mongoAdapter.js');
 const firebase = require('./firebaseAdapter.js');
 const Rx = require('rxjs/Rx');
 const diff = require('deep-diff').diff;
+const Papa = require('babyparse');
+const fs = require('fs');
+var path = require('path');
 
 const app = express();
 
@@ -23,13 +26,13 @@ console.log('Listening on port ' + portListen + '...');
 // ENDPOINTS
 app.get('/', getAll);
 app.get('/keys', getRootKeys);
+app.get('/getStocks', getStocks)
 app.get('/:id', getId);
 app.post('/:id' , post);
 app.patch('/:id', patch);
 app.delete('/:id', deleteId);
 app.get('/:id/keys', getKeys);
 app.get('/:id/test', testId);
-
 
 
 
@@ -156,4 +159,29 @@ function testId(req, res) {
 			},
 			err => res.status(500).send(err)
 		)
+}
+
+function getStocks(req, res) {
+	const file = (path.join(__dirname, '/../public/assets/stocks.csv'))
+	const content = fs.readFileSync(file, { encoding: 'binary' });
+	const payload = []
+	Papa.parse(content, {
+			header: true,
+			step: function(row){
+					payload.push({
+						ticker: row.data[0].ticker,
+						name: row.data[0].name,
+						industry: row.data[0].industry,
+						sector: row.data[0].sector,
+						marketCap: row.data[0].marketCap,
+						spy: !!row.data[0].spy,
+						qqq: !!row.data[0].qqq,
+						dow: !!row.data[0].dow,
+					})
+			},
+			error: function(error) {
+				res.status(500).send(error)
+			}
+		});
+	res.status(200).send(payload);
 }
