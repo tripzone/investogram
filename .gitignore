@@ -4,7 +4,7 @@
 /node_modules
 /private
 /apiAdapter/node_modules
-
+/src/private
 
 # testing
 /coverage

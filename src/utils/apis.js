@@ -1,8 +1,9 @@
 import $ from 'jquery';
 import axios from 'axios';
+import { awsServer } from '../private/server.js';
 
 const instance = axios.create({
-	baseURL: 'http://localhost:2500',
+	baseURL: awsServer,
 	timeout: 2000,
 	headers: { 'Content-Type': 'application/json' }
 });
