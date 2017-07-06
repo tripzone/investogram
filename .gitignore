@@ -2,9 +2,9 @@
 
 # dependencies
 /node_modules
-/src/private
+/private
 /apiAdapter/node_modules
-/apiAdapter/private
+
 
 # testing
 /coverage

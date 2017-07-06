@@ -5,7 +5,7 @@ import classNames from 'classnames'
 
 import './App.css';
 import * as payloaders from './payloaders';
-import { apiGet, dbPost, dbPatch, dbGet, stocksGet } from './utils/apis';
+import { apiGet, dbPost, dbPatch, dbGet } from './utils/apis';
 import {morningStarUrl, edgarAnnUrl, edgarQtrUrl, edgarTtmUrl} from './utils/urls';
 import {appState, Stock, Stream, Flow} from './state/state'
 
@@ -192,10 +192,11 @@ appState.removeCancel = function() {
 					</div>
 				</div>
 				<div className="app-stocks ">
-				{appState.loaded ? Object.keys(appState.stocks).map((x)=>{
+				{appState.loaded ? Object.keys(appState.stocks).map((x, index)=>{
 				return (
 					<div key={x} className={`app-stocks-row row ${appState.stocks[x].active ? 'greenBG' : null}`}>
 						<div className="app-stocks-cell col s12">
+							{index}
 							<div className="app-stocks-cell-text col s2" onClick={() => appState.stocks[x].toggleActive()}>{appState.stocks[x].ticker}</div>
 							{Object.keys(streams).map((y) => {
 								return <FlowBox key={x+y} flow={appState.stocks[x].flows[y]} />

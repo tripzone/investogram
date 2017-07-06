@@ -2,11 +2,12 @@
 const admin = require('firebase-admin');
 const request = require('request');
 const Rx = require('rxjs/Rx');
+const path = require('path');
 
-const keys = require('./private/keys.js');
-const secret = require('./private/secret.json');
-const devkeys = require('./private/devkeys.js');
-const devsecret = require('./private/devsecret.json');
+const keys = require(path.join(__dirname, '/../private/keys.js'));
+const secret = require(path.join(__dirname, '/../private/secret.json'));
+const devkeys = require(path.join(__dirname, '/../private/devkeys.js'));
+const devsecret = require(path.join(__dirname, '/../private/devsecret.json'));
 
 const envUse = 'prod';
 

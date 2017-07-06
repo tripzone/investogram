@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
+const path = require('path');
 
-const collection = 'collection';
 const symbol = '_id'
 const success = { succedss: true }
-const keys = require('./private/keys.js');
-const devkeys = require('./private/devkeys.js');
-
+const keys = require(path.join(__dirname, '/../private/keys.js'));
+const devkeys = require(path.join(__dirname, '/../private/devkeys.js'));
+console.log('keyso', keys)
 const envUse = 'prod'
 
 const mongooseDB = envUse === 'prod' ? keys.mongooseDB : devkeys.mongooseDB;
