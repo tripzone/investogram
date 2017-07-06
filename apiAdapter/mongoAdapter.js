@@ -5,7 +5,6 @@ const symbol = '_id'
 const success = { succedss: true }
 const keys = require(path.join(__dirname, '/../private/keys.js'));
 const devkeys = require(path.join(__dirname, '/../private/devkeys.js'));
-console.log('keyso', keys)
 const envUse = 'prod'
 
 const mongooseDB = envUse === 'prod' ? keys.mongooseDB : devkeys.mongooseDB;
