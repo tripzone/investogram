@@ -59,7 +59,7 @@
 	"scripts": {
 		"app": "node scripts/start.js",
 		"backend": "node ./apiAdapter/fminerApi.js",
-		"start": "concurrently -p \"[{name}]\" -n \"APP,APIADAPTER\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run app\" \"npm run apiadapter\"",
+		"start": "concurrently -p \"[{name}]\" -n \"APP,APIADAPTER\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run app\" \"npm run backend\"",
 		"build": "node scripts/build.js",
 		"test": "node scripts/test.js --env=jsdom"
 	},

@@ -80,6 +80,7 @@ function getAll(req, res) {
 function getId(req, res) {
 	// mongo.getId(req.header(collection), req.params.id).then((x)=> res.status(200).send(x));
 	const stock = req.params.id;
+	console.log('getting', stock)
 	firebase.getId(stock).then(
 		x => res.status(200).send(x),
 		err => res.status(500).send(err)

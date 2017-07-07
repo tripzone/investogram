@@ -49,6 +49,7 @@ module.exports = {
 	},
 
 	getId: (home) => {
+		console.log('in firebase getId')
 		const ref = db.ref(home);
 		return new Promise((resolve, reject) => {
 			ref.once('value',
