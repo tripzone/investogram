@@ -25,6 +25,7 @@ const fail = { success: 0 };
 const queryUrl = '.json?auth=' + fbAuthId;
 const shallowUrl = '&shallow=true';
 
+
 const url = (home, child, shallow) => {
 	const urlPath = shallow ? queryUrl + shallowUrl : queryUrl;
 	return !child ? fbUrl + home + urlPath : fbUrl + home + '/' + child + urlPath;
@@ -49,7 +50,6 @@ module.exports = {
 	},
 
 	getId: (home) => {
-		console.log('in firebase getId')
 		const ref = db.ref(home);
 		return new Promise((resolve, reject) => {
 			ref.once('value',
@@ -76,7 +76,7 @@ module.exports = {
 		});
 	},
 
-	deleteId: (home, child = null) => {
+	deleteId: (home, child) => {
 		return new Promise((resolve, reject) => {
 			if (child) {
 				db.ref(home).child(child).remove((err) => {
@@ -99,12 +99,25 @@ module.exports = {
 	})},
 
 	getKeys: (home) => {
+		return new Promise((resolve, reject) => {
+			urlCatch(home, false, true).then(x => {
+				if (!!x) {
+					resolve(x)
+				} else {
+					reject(Object.assign(fail, { error: 'OBJECT_NOT_FOUND' }));
+				}
+			}).catch(err => {
+				reject(Object.assign(fail, { error: 'OBJECT_NOT_FOUND' }, { desc: err }));
+			});
+		});
+	},
+
+	getKeysDeep: (home) => {
 		const result = {};
 		return new Promise((resolve, reject) => {
 			urlCatch(home, false, true).then(x => {
 				if (!!x) {
 					const subRoots = Object.keys(JSON.parse(x));
-					let currentRoot = ''
 					return Rx.Observable.from(subRoots)
 							.mergeMap(x => Rx.Observable.fromPromise(urlCatch(home,x,true))
 								.do(y => { return result[x] = Object.keys(JSON.parse(y)) })

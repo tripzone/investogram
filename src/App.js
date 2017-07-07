@@ -15,7 +15,8 @@ import {appState, Stock, Stream, Flow} from './state/state'
 
 const saveToDatabase = (stock, collection, data) => {
 	return new Promise((resolve, reject)=> {
-		appState.db && !!appState.db[stock] ? resolve(dbPatch(stock, collection, data)) : resolve(dbPost(stock, collection, data));
+		// appState.db && !!appState.db[stock] ? resolve(dbPatch(stock, collection, data)) : resolve(dbPost(stock, collection, data));
+		resolve(dbPatch(stock, collection, data));
 	});
 }
 
@@ -55,10 +56,10 @@ const streams = {
 }
 
 const runClicked = (streamState) => {
-	const msStream$ = newStream(1000, morningStarUrl, 'morningstar', payloaders.morningstar);
-	const edgarAnnStream$ = newStream(1000, edgarAnnUrl, 'edgarAnnual' , payloaders.edgarAnnual);
-	const edgarQtrStream$ = newStream(2000, edgarQtrUrl, 'edgarQtr' , payloaders.edgarQtr);
-	const edgarTtmStream$ = newStream(2000, edgarTtmUrl, 'edgarTtm' , payloaders.edgarQtr);
+	const msStream$ = newStream(1023, morningStarUrl, 'morningstar', payloaders.morningstar);
+	const edgarAnnStream$ = newStream(500, edgarAnnUrl, 'edgarAnnual' , payloaders.edgarAnnual);
+	const edgarQtrStream$ = newStream(500, edgarQtrUrl, 'edgarQtr' , payloaders.edgarQtr);
+	const edgarTtmStream$ = newStream(500, edgarTtmUrl, 'edgarTtm' , payloaders.edgarQtr);
 
 	const streamFlows = {
 		morningstar: msStream$,
@@ -155,7 +156,7 @@ appState.removeCancel = function() {
 @observer class App extends Component {
 	componentWillMount() {
 		appState.loadStocks();
-		appState.loadDBKeys();
+		// appState.loadDBKeys();
 		appState.loadStreams();
 	}
 	render() {

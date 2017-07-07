@@ -1,9 +1,9 @@
 import $ from 'jquery';
 import axios from 'axios';
-import { awsServer } from '../private/server.js';
+import { backendEndpoint } from '../private/server.js';
 
 const instance = axios.create({
-	baseURL: awsServer,
+	baseURL: backendEndpoint,
 	timeout: 2000,
 	headers: { 'Content-Type': 'application/json' }
 });
