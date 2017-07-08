@@ -18,7 +18,7 @@ export class Flow {
 }
 
 export class Stream {
-	@observable active = true;
+	@observable active = false;
 	@observable running = false;
 	toggleActive = function () {
 		this.active = !this.active;

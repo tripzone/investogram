@@ -106,3 +106,8 @@ export const morningstar = (x) => {
 	}
 	return null;
 };
+
+export const returns = (x) =>{
+	// console.log('returns', x);
+	return null;
+}

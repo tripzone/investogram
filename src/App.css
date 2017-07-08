@@ -20,7 +20,7 @@
 }
 
 .call-status-0 {
-	background-color: grey;
+	background-color: silver;
 }
 
 .app-stocks-cell {
@@ -49,6 +49,11 @@
 .app-stocks-title-text {
 	padding-left: 30px;
 	cursor: pointer;
+}
+
+.app-stocks-cell-index {
+position: absolute;
+color: silver;
 }
 
 .greenBG {

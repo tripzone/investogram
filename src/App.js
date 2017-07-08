@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import './App.css';
 import * as payloaders from './payloaders';
 import { apiGet, dbPost, dbPatch, dbGet } from './utils/apis';
-import {morningStarUrl, edgarAnnUrl, edgarQtrUrl, edgarTtmUrl} from './utils/urls';
+import {morningStarUrl, edgarAnnUrl, edgarQtrUrl, edgarTtmUrl, returnsUrl} from './utils/urls';
 import {appState, Stock, Stream, Flow} from './state/state'
 
 
@@ -34,14 +34,16 @@ const newStream = (interval, apiUrl, flow, payloader) => {
 					return Rx.Observable.empty();
 				})
 			.map(y => payloader(y))
-			.do(y => {console.log(x, ': got', flow); appState.stocks[x].flows[flow].apiCalled()})
-			.mergeMap(y => { return !y ? Rx.Observable.empty() : Rx.Observable.fromPromise(saveToDatabase(x, flow, y))
+			.do(y => {console.log(x, ': got', flow, y); appState.stocks[x].flows[flow].apiCalled()})
+			.mergeMap(y => { console.log('uso', y);return !y ? Rx.Observable.empty() : Rx.Observable.fromPromise(saveToDatabase(x, flow, y))
 				.catch((err)=>{
 					console.log( x, "Error in Save", err)
 					appState.stocks[x].flows[flow].saveFailed();
 					return Rx.Observable.empty();
 				})
 			})
+			.do(y=> {console.log(' after all',y)})
+
 			.do(y=> {console.log(x, ': saved ', flow); appState.stocks[x].flows[flow].saveSucceeded()})
 		)
 }
@@ -52,20 +54,23 @@ const streams = {
 	morningstar: {text: 'Morning Star'},
 	edgarAnnual: {text: 'Edgar Annual'},
 	edgarQtr: {text: 'Edgar Quarter'},
-	edgarTtm: {text: 'Edgar TTM'}
+	edgarTtm: {text: 'Edgar TTM'},
+	returnsCalc: {text: 'Returns'}
 }
 
 const runClicked = (streamState) => {
-	const msStream$ = newStream(1023, morningStarUrl, 'morningstar', payloaders.morningstar);
-	const edgarAnnStream$ = newStream(500, edgarAnnUrl, 'edgarAnnual' , payloaders.edgarAnnual);
-	const edgarQtrStream$ = newStream(500, edgarQtrUrl, 'edgarQtr' , payloaders.edgarQtr);
-	const edgarTtmStream$ = newStream(500, edgarTtmUrl, 'edgarTtm' , payloaders.edgarQtr);
+	const msStream$ = newStream(1023, morningStarUrl, 	Object.keys(streams)[0], payloaders.morningstar);
+	const edgarAnnStream$ = newStream(500, edgarAnnUrl, Object.keys(streams)[1] , payloaders.edgarAnnual);
+	const edgarQtrStream$ = newStream(500, edgarQtrUrl, Object.keys(streams)[2] , payloaders.edgarQtr);
+	const edgarTtmStream$ = newStream(500, edgarTtmUrl, Object.keys(streams)[3] , payloaders.edgarQtr);
+	const returnsStream$ = newStream(300, returnsUrl, Object.keys(streams)[4] , payloaders.returns);
 
 	const streamFlows = {
 		morningstar: msStream$,
 		edgarAnnual: edgarAnnStream$,
-		edgarQtr: edgarQtrStream$ ,
-		edgarTtm: edgarTtmStream$
+		edgarQtr: edgarQtrStream$,
+		edgarTtm: edgarTtmStream$,
+		returnsCalc: returnsStream$,
 	}
 
 	appState.removeCancel();
@@ -197,8 +202,11 @@ appState.removeCancel = function() {
 				return (
 					<div key={x} className={`app-stocks-row row ${appState.stocks[x].active ? 'greenBG' : null}`}>
 						<div className="app-stocks-cell col s12">
-							{index}
-							<div className="app-stocks-cell-text col s2" onClick={() => appState.stocks[x].toggleActive()}>{appState.stocks[x].ticker}</div>
+							<div className="app-stocks-cell-index">{index}</div>
+
+							<div className="app-stocks-cell-text col s2" onClick={() => appState.stocks[x].toggleActive()}>
+								{appState.stocks[x].ticker}
+							</div>
 							{Object.keys(streams).map((y) => {
 								return <FlowBox key={x+y} flow={appState.stocks[x].flows[y]} />
 							})}
