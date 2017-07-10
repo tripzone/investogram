@@ -33,29 +33,27 @@ const newStream = (interval, apiUrl, flow, payloader) => {
 					appState.stocks[x].flows[flow].callFailed();
 					return Rx.Observable.empty();
 				})
-			.map(y => payloader(y))
-			.do(y => {console.log(x, ': got', flow, y); appState.stocks[x].flows[flow].apiCalled()})
-			.mergeMap(y => { console.log('uso', y);return !y ? Rx.Observable.empty() : Rx.Observable.fromPromise(saveToDatabase(x, flow, y))
+			.mergeMap(y => Rx.Observable.fromPromise(payloader(y, x)))
+			.do(y => { console.log(x, ': got', flow); appState.stocks[x].flows[flow].apiCalled()})
+			.mergeMap(y => { return !y ? Rx.Observable.empty() : Rx.Observable.fromPromise(saveToDatabase(x, flow, y))
 				.catch((err)=>{
 					console.log( x, "Error in Save", err)
 					appState.stocks[x].flows[flow].saveFailed();
 					return Rx.Observable.empty();
 				})
 			})
-			.do(y=> {console.log(' after all',y)})
-
 			.do(y=> {console.log(x, ': saved ', flow); appState.stocks[x].flows[flow].saveSucceeded()})
 		)
 }
 
 // const allStreams$ = Rx.Observable.merge(msStream$, edgarAnnStream$, edgarQtrStream$, edgarTtmStream$ );
 
-const streams = {
+export const streams = {
 	morningstar: {text: 'Morning Star'},
 	edgarAnnual: {text: 'Edgar Annual'},
 	edgarQtr: {text: 'Edgar Quarter'},
 	edgarTtm: {text: 'Edgar TTM'},
-	returnsCalc: {text: 'Returns'}
+	returns: {text: 'Returns'}
 }
 
 const runClicked = (streamState) => {
@@ -63,14 +61,14 @@ const runClicked = (streamState) => {
 	const edgarAnnStream$ = newStream(500, edgarAnnUrl, Object.keys(streams)[1] , payloaders.edgarAnnual);
 	const edgarQtrStream$ = newStream(500, edgarQtrUrl, Object.keys(streams)[2] , payloaders.edgarQtr);
 	const edgarTtmStream$ = newStream(500, edgarTtmUrl, Object.keys(streams)[3] , payloaders.edgarQtr);
-	const returnsStream$ = newStream(300, returnsUrl, Object.keys(streams)[4] , payloaders.returns);
+	const returnsStream$ = newStream(800, returnsUrl, Object.keys(streams)[4] , payloaders.returns);
 
 	const streamFlows = {
 		morningstar: msStream$,
 		edgarAnnual: edgarAnnStream$,
 		edgarQtr: edgarQtrStream$,
 		edgarTtm: edgarTtmStream$,
-		returnsCalc: returnsStream$,
+		returns: returnsStream$,
 	}
 
 	appState.removeCancel();

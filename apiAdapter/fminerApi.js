@@ -144,8 +144,8 @@ function getKeys(req, res) {
 }
 
 function getKeysDeep(req, res) {
-	const stock = req.params.id;
-	firebase.getKeysDeep(stock).then(
+	const home = req.params.id;
+	firebase.getKeysDeep(home).then(
 		x => res.status(200).send(x),
 		err => res.status(500).send(err)
 	);

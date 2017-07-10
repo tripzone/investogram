@@ -1,4 +1,7 @@
 import Papa from 'papaparse';
+import { dbGet } from './utils/apis';
+import { streams } from './App.js';
+import moment from 'moment';
 
 export const yahooDivs = (x) => {
 	const dividends = {};
@@ -10,25 +13,27 @@ export const yahooDivs = (x) => {
 };
 
 export const edgar = (x, reportType) => {
-	if (x.result) {
-		if(x.result.totalrows > 0) {
-			const parsedResults =  x.result.rows.map((row) => {
-				let rowObject = {}
-				row.values.forEach((value) => {
-					rowObject[value.field]=value.value;
-				});
-				return rowObject;
-			})
-			let periodObject = {}
-			parsedResults.forEach((period) => {
-				const keyValue = reportType === 'ann' ? period.fiscalyear : period.fiscalyear+'q'+period.fiscalquarter;
-				periodObject[keyValue] = period;
-			})
-			return periodObject;
+	return new Promise((resolve, reject)=> {
+		if (x.result) {
+			if(x.result.totalrows > 0) {
+				const parsedResults =  x.result.rows.map((row) => {
+					let rowObject = {}
+					row.values.forEach((value) => {
+						rowObject[value.field]=value.value;
+					});
+					return rowObject;
+				})
+				let periodObject = {}
+				parsedResults.forEach((period) => {
+					const keyValue = reportType === 'ann' ? period.fiscalyear : period.fiscalyear+'q'+period.fiscalquarter;
+					periodObject[keyValue] = period;
+				})
+				resolve(periodObject);
+			}
+			resolve(null);
 		}
-		return null;
-	}
-	return null;
+		resolve(null);
+	})
 }
 
 export const edgarAnnual = (x) => {
@@ -74,40 +79,93 @@ export const morningstar = (x) => {
 		skipEmptyLines: true,
 	});
 
-	// extract years
-	if (parsedText.data.length !== 0) {
-		const years = parsedText.data[2].map((item) => {
-			if (item === 'TTM') {
-				return 'TTM';
-			}
-			return new Date(item).getFullYear();
-		});
-		years.splice(0, 1);
+	return new Promise((resolve, reject)=> {
+		// extract years
+		if (parsedText.data.length !== 0) {
+			const years = parsedText.data[2].map((item) => {
+				if (item === 'TTM') {
+					return 'TTM';
+				}
+				return new Date(item).getFullYear();
+			});
+			years.splice(0, 1);
 
-		// map data to corresponding year
-		const data = {};
-		parsedText.data.forEach((item) => {
-			let title = item[0];
-			replaceText.forEach((y) => { title = title.replace(y, ''); });
-			title = title.replace('/', '|');
-			title = addToTitle[title] ? title + addToTitle[title] : title;
-			if (item.length > 1 && !skipFields.includes(item[0])) {
-				// get rid of the title
-				const itemWithoutTitle = item.splice(1, item.length);
-				itemWithoutTitle.forEach((value, index) => {
-					if (!data[years[index]]) {
-						data[years[index]] = {};
-					}
-					data[years[index]][title] = value;
-				});
-			}
-		});
-		return data;
-	}
-	return null;
+			// map data to corresponding year
+			const data = {};
+			parsedText.data.forEach((item) => {
+				let title = item[0];
+				replaceText.forEach((y) => { title = title.replace(y, ''); });
+				title = title.replace('/', '|');
+				title = addToTitle[title] ? title + addToTitle[title] : title;
+				if (item.length > 1 && !skipFields.includes(item[0])) {
+					// get rid of the title
+					const itemWithoutTitle = item.splice(1, item.length);
+					itemWithoutTitle.forEach((value, index) => {
+						if (!data[years[index]]) {
+							data[years[index]] = {};
+						}
+						data[years[index]][title] = value;
+					});
+				}
+			});
+			resolve(data);
+		}
+		resolve(null);
+	})	
 };
 
-export const returns = (x) =>{
-	// console.log('returns', x);
-	return null;
+const findPriceLine = (parsedData, targetDay) => {
+	let arrayLength;
+	let priceLine
+	let count = 0;
+	do {
+		priceLine = parsedData.data.filter((x)=>x.Date === targetDay.format('YYYY-MM-DD'));
+		arrayLength = priceLine.length;
+		arrayLength === 0 ?  targetDay.add(-1, 'days') : null;		
+		count ++;	
+	}
+	while (arrayLength === 0 && count < 8)
+	return priceLine[0];
+}
+
+export const returns = (data, stock) =>{
+	return new Promise((resolve, reject)=> {
+		const collections = [Object.keys(streams)[2]];
+		const parsedData = Papa.parse(data, {
+			header: true,
+			dynamicTyping: true,
+			skipEmptyLines: true,
+		});
+
+		collections.map((collection) => {
+			let payload = {};
+			dbGet(collection+'/'+stock).then((collectionData)=>{
+				Object.keys(collectionData.data).map(
+					(periodKey) => 
+					{
+						payload[periodKey]={};
+						const targetDay = moment(collectionData.data[periodKey].periodenddate);
+		
+						let priceLine;
+
+						const targetOffsets = [0, 7,14,30,90]
+						const targetCopy = targetDay;
+
+						let lastOffset = 0;
+						targetOffsets.forEach((offset) => {
+							targetCopy.add(offset - lastOffset, 'days')
+							lastOffset= offset;
+							priceLine = findPriceLine(parsedData, targetCopy)
+							if (priceLine) {
+								payload[periodKey][offset+'dayPrice'] = priceLine['Adj. Close'];
+								payload[periodKey][offset+'dayDate'] = moment(priceLine['Date']).format('MM-DD-YYYY');
+							}
+						})
+					}
+				);
+			console.log(stock, ':calculated returns')
+			resolve(payload);
+			}).catch((x) => {resolve(null)} )
+		});
+	})
 }
