@@ -111,7 +111,7 @@ export const morningstar = (x) => {
 			resolve(data);
 		}
 		resolve(null);
-	})	
+	})
 };
 
 const findPriceLine = (parsedData, targetDay) => {
@@ -121,8 +121,8 @@ const findPriceLine = (parsedData, targetDay) => {
 	do {
 		priceLine = parsedData.data.filter((x)=>x.Date === targetDay.format('YYYY-MM-DD'));
 		arrayLength = priceLine.length;
-		arrayLength === 0 ?  targetDay.add(-1, 'days') : null;		
-		count ++;	
+		if (arrayLength === 0) { targetDay.add(-1, 'days') };
+		count ++;
 	}
 	while (arrayLength === 0 && count < 8)
 	return priceLine[0];
@@ -137,30 +137,37 @@ export const returns = (data, stock) =>{
 			skipEmptyLines: true,
 		});
 
-		collections.map((collection) => {
+		collections.forEach((collection) => {
 			let payload = {};
 			dbGet(collection+'/'+stock).then((collectionData)=>{
-				Object.keys(collectionData.data).map(
-					(periodKey) => 
+				Object.keys(collectionData.data).forEach(
+					(periodKey) =>
 					{
 						payload[periodKey]={};
-						const targetDay = moment(collectionData.data[periodKey].periodenddate);
-		
-						let priceLine;
+						// const receiveddate = moment(collectionData.data[periodKey].receiveddate);
+						const receivedDate = moment(collectionData.data[periodKey].receiveddate);
+						const periodDate = moment(collectionData.data[periodKey].periodenddate)
+						const marginDate = periodDate;
+						const targetDay = periodDate;
+						marginDate.add(45, 'days');
+						if (!targetDay.isAfter(marginDate)){
+							let priceLine;
 
-						const targetOffsets = [0, 7,14,30,90]
-						const targetCopy = targetDay;
+							const targetOffsets = [0, 7,14,30,90]
+							const targetCopy = targetDay;
 
-						let lastOffset = 0;
-						targetOffsets.forEach((offset) => {
-							targetCopy.add(offset - lastOffset, 'days')
-							lastOffset= offset;
-							priceLine = findPriceLine(parsedData, targetCopy)
-							if (priceLine) {
-								payload[periodKey][offset+'dayPrice'] = priceLine['Adj. Close'];
-								payload[periodKey][offset+'dayDate'] = moment(priceLine['Date']).format('MM-DD-YYYY');
-							}
-						})
+							let lastOffset = 0;
+							targetOffsets.forEach((offset) => {
+								targetCopy.add(offset - lastOffset, 'days')
+								lastOffset= offset;
+								priceLine = findPriceLine(parsedData, targetCopy)
+								if (priceLine) {
+									payload[periodKey][offset+'dayPrice'] = priceLine['Adj. Close'];
+									payload[periodKey][offset+'dayDate'] = moment(priceLine['Date']).format('MM-DD-YYYY');
+								}
+							})
+						}
+
 					}
 				);
 			console.log(stock, ':calculated returns')

@@ -53,22 +53,22 @@ export const streams = {
 	edgarAnnual: {text: 'Edgar Annual'},
 	edgarQtr: {text: 'Edgar Quarter'},
 	edgarTtm: {text: 'Edgar TTM'},
-	returns: {text: 'Returns'}
+	returnsP: {text: 'Returns'}
 }
 
 const runClicked = (streamState) => {
-	const msStream$ = newStream(1023, morningStarUrl, 	Object.keys(streams)[0], payloaders.morningstar);
-	const edgarAnnStream$ = newStream(500, edgarAnnUrl, Object.keys(streams)[1] , payloaders.edgarAnnual);
-	const edgarQtrStream$ = newStream(500, edgarQtrUrl, Object.keys(streams)[2] , payloaders.edgarQtr);
+	const msStream$ = newStream(523, morningStarUrl, 	Object.keys(streams)[0], payloaders.morningstar);
+	const edgarAnnStream$ = newStream(520, edgarAnnUrl, Object.keys(streams)[1] , payloaders.edgarAnnual);
+	const edgarQtrStream$ = newStream(520, edgarQtrUrl, Object.keys(streams)[2] , payloaders.edgarQtr);
 	const edgarTtmStream$ = newStream(500, edgarTtmUrl, Object.keys(streams)[3] , payloaders.edgarQtr);
-	const returnsStream$ = newStream(800, returnsUrl, Object.keys(streams)[4] , payloaders.returns);
+	const returnsStream$ = newStream(1000, returnsUrl, Object.keys(streams)[4] , payloaders.returns);
 
 	const streamFlows = {
 		morningstar: msStream$,
 		edgarAnnual: edgarAnnStream$,
 		edgarQtr: edgarQtrStream$,
 		edgarTtm: edgarTtmStream$,
-		returns: returnsStream$,
+		returnsP: returnsStream$,
 	}
 
 	appState.removeCancel();
