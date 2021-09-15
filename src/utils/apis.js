@@ -9,6 +9,7 @@ const instance = axios.create({
 });
 
 export const apiGet = (url) => {
+	console.log('heo')
 	return $.ajax({
 		url,
 		Type: 'GET',
@@ -17,26 +18,26 @@ export const apiGet = (url) => {
 		error: (jqXHR, textStatus, errorThrown) => {
 			console.log('Error: ' + textStatus, errorThrown);
 		},
-		complete: () => {},
+		complete: () => { },
 	});
 };
 
 export const dbPost = (url, collection, data) => {
 	return instance.post(
-		'/'+url,
+		'/' + url,
 		JSON.stringify(data),
 		{ headers: { collection } });
 };
 
 export const dbPatch = (url, collection, data) => {
 	return instance.patch(
-		'/'+url,
+		'/' + url,
 		JSON.stringify(data),
 		{ headers: { collection } });
 };
 
 export const dbGet = (url) => {
 	return instance.get(
-		'/'+url,
-		);
+		'/' + url,
+	);
 };

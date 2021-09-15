@@ -1,0 +1,50 @@
+desc,id,prov
+"Average, Median and Price Percentiles for Absorbed Homeowner and Condominium Units (in Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HPPA50,TRUE
+"Average, Median and Price Percentiles for Unabsorbed Homeowner and Condominium Units (in Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HPPU50,TRUE
+"Housing Absorbed Homeowner and Condominium Units by Dwelling Type (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HAD50,FALSE
+Housing Absorbed Homeowner and Condominium Units by Dwelling Type (In Census Metropolitan Areas),HADMA,TRUE
+"Housing Absorbed Homeowner and Condominium Units by Intended Market (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HAI50,FALSE
+Housing Absorbed Homeowner and Condominium Units by Intended Market (In Census Metropolitan Areas),HAIMA,FALSE
+"Housing Average Length of Construction by Dwelling Type (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HLD50,FALSE
+Housing Average Length of Construction by Dwelling Type (In Census Metropolitan Areas),HLDMA,TRUE
+Housing Completions by Dwelling Type (All Areas),HCDAA,TRUE
+"Housing Completions by Dwelling Type (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HCDMA,FALSE
+"Housing Completions by Dwelling Type (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HCDMA50,FALSE
+"Housing Completions by Dwelling Type (in Census Metropolitan Areas, Census Agglomerations, and other selected municipalities with at least 10,000 people)",HCDMA10,FALSE
+"Housing Completions by Intended Market (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HCIMA50,FALSE
+Housing Completions by Intended Market (In Census Metropolitan Areas),HCIMA,FALSE
+"Housing Completions by Intended Market (In Census Metropolitan Areas, Census Agglomerations, and other, selected municipalities with at least 10,000 people)",HCIMA10,FALSE
+"Housing Homeowner and Condominium Units Absorbed at Completion by Dwelling Type (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HACD50,FALSE
+Housing Homeowner and Condominium Units Absorbed at Completion by Dwelling Type (In Census Metropolitan Areas),HACDMA,TRUE
+"Housing Homeowner and Condominium Units Absorbed at Completion by Intended Market (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HACI50,FALSE
+Housing Homeowner and Condominium Units Absorbed at Completion by Intended Market (In Census Metropolitan Areas),HACIMA,FALSE
+"Housing Inventory of Completed and Unabsorbed Homeowner and Condominium Units by Dwelling Type (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HCUD50,FALSE
+Housing Inventory of Completed and Unabsorbed Homeowner and Condominium Units by Dwelling Type (In Census Metropolitan Areas),HCUDMA,TRUE
+Housing Starts by Dwelling Type (All Areas),HSDAA,TRUE
+"Housing Starts by Dwelling Type (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HSDMA50,FALSE
+"Housing Starts by Dwelling Type (in Census Metropolitan Areas, Census Agglomerations, and other selected municipalities with at least 10,000 people)",HSDMA10,FALSE
+Housing Starts by Dwelling Type (In Census Metropolitan Areas,HSDMA,FALSE
+Housing Starts by Dwelling Type - Seasonally Adjusted (All Areas),HSDAAS,FALSE
+"Housing Starts by Dwelling Type - Seasonally Adjusted (in Census Metropolitan Areas, Census Agglomerations, and other selected municipalities with at least 10,000 people)",HSDMA10S,FALSE
+"Housing Starts by Intended Market (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HSIMA50,FALSE
+Housing Starts by Intended Market (In Census Metropolitan Areas),HSIMA,FALSE
+"Housing Starts by Intended Market (In Census Metropolitan Areas, Census Agglomerations, and other, selected municipalities with at least 10,000 people)",HSIMA10,FALSE
+Housing Under Construction Inventory by Dwelling Type (All Areas),HUDAA,TRUE
+"Housing Under Construction Inventory by Dwelling Type (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HUDMA,FALSE
+"Housing Under Construction Inventory by Dwelling Type (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HUDMA50,FALSE
+"Housing Under Construction Inventory by Dwelling Type (in Census Metropolitan Areas, Census Agglomerations, and other selected municipalities with at least 10,000 people)",HUDMA10,FALSE
+"Housing Under Construction Inventory by Intended Market (In Census Metropolitan Areas and Census Agglomerations with at least 50,000 people)",HUIMA50,FALSE
+Housing Under Construction Inventory by Intended Market (In Census Metropolitan Areas),HUIMA,FALSE
+"Housing Under Construction Inventory by Intended Market (In Census Metropolitan Areas, Census Agglomerations, and other, selected municipalities with at least 10,000 people)",HUIMA10,FALSE
+Seniors' Number of Units and Proportion of Overall Universe for Bachelor Units and Private Rooms where Meals are included in Rent,SUPUM,FALSE
+Seniors' Proportion (%) of Standard Spaces by Rent Range,SPSR,FALSE
+Seniors' Rental Housing Vacancy Rates by Unit Type,SRVU,FALSE
+Seniors' Spaces by Unit Type,SSUT,FALSE
+Seniors' Universe of Standard Spaces By Bedroom Type,SUDB,FALSE
+Seniors' Vacancy Rate and Average Rent for Bachelor/Private Rooms with Meals included in Rent,SVRPM,FALSE
+Seniors' Vacancy Rate and Average Rent for Heavy Care Spaces,SVRH,FALSE
+Vacancy Rates by Bedroom Type,PRVBT,FALSE
+Vacancy Rates by Rent Quartiles,PRVRQ,FALSE
+Vacancy Rates by Rent Ranges,PRVRR,FALSE
+Vacancy Rates by Structure Size,PRVSS,FALSE
+Vacancy Rates by Year of Construction,PRVYC,FALSE
